@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dar de baja material</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    label { display: block; margin-top: 10px; }
+    input, select, button { margin-top: 5px; padding: 8px; width: 100%; }
+  </style>
+</head>
+<body>
+  <h2>Registro de baja de material</h2>
+  <p><strong>Código:</strong> <span id="codigo"></span></p>
+
+  <label>Máquina:</label>
+  <input type="text" id="maquina" placeholder="Escribe o selecciona la máquina">
+
+  <label>Cantidad a dar de baja:</label>
+  <input type="number" id="cantidad">
+
+  <button onclick="registrar()">Registrar baja</button>
+
+  <script>
+    // Leer el parámetro "codigo" de la URL
+    const params = new URLSearchParams(window.location.search);
+    const codigo = params.get("codigo");
+    document.getElementById("codigo").textContent = codigo;
+
+    function registrar() {
+      const maquina = document.getElementById("maquina").value;
+      const cantidad = document.getElementById("cantidad").value;
+      alert(`Se registró la baja del código ${codigo} en máquina ${maquina}, cantidad ${cantidad}`);
+      // Aquí podrías enviar los datos a una hoja de Google Sheets o base de datos.
+    }
+  </script>
+</body>
+</html>
