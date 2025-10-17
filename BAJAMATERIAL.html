@@ -1,38 +1,56 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Dar de baja material</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    label { display: block; margin-top: 10px; }
-    input, select, button { margin-top: 5px; padding: 8px; width: 100%; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventario - Auxim</title>
 </head>
 <body>
-  <h2>Registro de baja de material</h2>
-  <p><strong>Código:</strong> <span id="codigo"></span></p>
+  <h2 id="titulo">Cargando...</h2>
+  <p><strong>Material:</strong> <span id="material"></span></p>
+  <p><strong>Cantidad disponible:</strong> <span id="cantidad"></span></p>
 
-  <label>Máquina:</label>
-  <input type="text" id="maquina" placeholder="Escribe o selecciona la máquina">
+  <label>Máquina / Persona:</label>
+  <input id="maquina" placeholder="Ejemplo: WATMA o Juan Pérez">
 
-  <label>Cantidad a dar de baja:</label>
-  <input type="number" id="cantidad">
+  <label>Cantidad a restar:</label>
+  <input id="resta" type="number" min="1">
 
-  <button onclick="registrar()">Registrar baja</button>
+  <button onclick="restar()">Restar</button>
 
   <script>
-    // Leer el parámetro "codigo" de la URL
     const params = new URLSearchParams(window.location.search);
-    const codigo = params.get("codigo");
-    document.getElementById("codigo").textContent = codigo;
+    const id = params.get("id");
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbwqe-zxAJr89tVrTsZYHnnv-0pvSI71N8xPPU_J6e8owAlbOgD1YWQPyBNyOTEPuQDs3w/exec";
+    // tu URL de Apps Script
 
-    function registrar() {
-      const maquina = document.getElementById("maquina").value;
-      const cantidad = document.getElementById("cantidad").value;
-      alert(`Se registró la baja del código ${codigo} en máquina ${maquina}, cantidad ${cantidad}`);
-      // Aquí podrías enviar los datos a una hoja de Google Sheets o base de datos.
+    // Cargar material
+    fetch(webAppUrl + "?id=" + id)
+      .then(res => res.json())
+      .then(data => {
+        if (!data) {
+          document.getElementById("titulo").innerText = "No encontrado";
+          return;
+        }
+        document.getElementById("titulo").innerText = "Inventario";
+        document.getElementById("material").innerText = data.material;
+        document.getElementById("cantidad").innerText = data.cantidad;
+        document.getElementById("resta").dataset.row = data.row;
+      });
+
+    // Restar material
+    function restar() {
+      const row = document.getElementById("resta").dataset.row;
+      const amount = document.getElementById("resta").value;
+      fetch(webAppUrl + "?row=" + row + "&amount=" + amount)
+        .then(res => res.json())
+        .then(resp => {
+          alert("Cantidad actualizada: " + resp.previous + " → " + resp.now);
+          document.getElementById("cantidad").innerText = resp.now;
+          document.getElementById("resta").value = "";
+        });
     }
   </script>
 </body>
 </html>
+
